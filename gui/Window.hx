@@ -1,5 +1,6 @@
 package gui;
 
+import gui.elements.colorpicker.*;
 import gui.elements.data.*;
 import hxd.Key;
 import h2d.Scene;
@@ -31,11 +32,13 @@ class Window {
     var lastElement:Element;
     var labelHeight:Float = 48;
 
-    public function new(x:Float = 0, y:Float = 0, width:Float = 100, height:Float = 100, label:String = '') {
+    var currentHeight:Float;
+
+    public function new(x:Float = 0, y:Float = 0, width:Float = 100, label:String = '') {
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = height;
+        this.height = labelHeight;
 
         parent = Main.inst;
 
@@ -46,7 +49,6 @@ class Window {
 
     public function update():Void {
      
-
         if (canDrag) {
             if (Key.isPressed(Key.MOUSE_LEFT) && !isReady && parent.mouseX > x && parent.mouseX < x + width && parent.mouseY > y && parent.mouseY < y + labelHeight) {
                 isReady = true;
@@ -77,14 +79,31 @@ class Window {
         lastmouse.x = parent.mouseX;
         lastmouse.y = parent.mouseY;
 
+        
+        resizeWindow();
+
+
         drawContainer();
+
+
+
+    }
+
+    function resizeWindow():Void {
+        currentHeight = labelHeight;
+
+        ///Calcuatle Current Height
+        for (i in children) {
+            currentHeight += i.height;
+
+        }
     }
 
     function drawContainer():Void {
         sprite.clear();
 
         sprite.beginFill(0x080808);
-        sprite.drawRect(x, y, width, height);
+        sprite.drawRect(x, y, width, currentHeight);
         sprite.endFill();
 
         sprite.beginFill(0x242424);
@@ -156,6 +175,14 @@ class Window {
         return panel;
     }
 
+    public function createColorpicker(r:Float = 1, g:Float = 0, b:Float = 0):Colorpicker {
+        var colorpicker = new Colorpicker(x, getNextYpos(), width);
+
+        addElement(colorpicker);
+
+        return colorpicker;
+    }
+
     function addElement(e:Element) {
         lastElement = e;
         elementHeight = e.height;
@@ -163,6 +190,8 @@ class Window {
 
         children.push(e);
     }
+
+    
 /*
     public function createOutliner(data:Array<Data>) {
         var outliner = new Outliner(x, getNextYpos(), width, elementHeight, data);
