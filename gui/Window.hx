@@ -1,5 +1,6 @@
 package gui;
 
+import h2d.Mask;
 import gui.elements.colorpicker.*;
 import gui.elements.data.*;
 import hxd.Key;
@@ -12,15 +13,15 @@ class Window {
 
     var sprite:Graphics;
     var text:Text;
-    
+
     public var x:Float;
     public var y:Float;
     public var width:Float;
     public var height:Float;
 
-    var parent:Scene;
+    public var parent:Scene;
 
-    public var canDrag:Bool;
+    public var isLocked:Bool = true;
 
     var isReady:Bool;
     var mousemovement = new Point();
@@ -34,22 +35,23 @@ class Window {
 
     var currentHeight:Float;
 
-    public function new(x:Float = 0, y:Float = 0, width:Float = 100, label:String = '') {
+    public function new(x:Float = 0, y:Float = 0, width:Float = 100, label:String = '', parent:Scene) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = labelHeight;
-
-        parent = Main.inst;
+        this.parent = parent;
 
         sprite = new Graphics(parent);
 
         text = Text.createText(x, y, label);
+
+        Main.windows.push(this);
     }
 
     public function update():Void {
-     
-        if (canDrag) {
+
+        if (!isLocked) {
             if (Key.isPressed(Key.MOUSE_LEFT) && !isReady && parent.mouseX > x && parent.mouseX < x + width && parent.mouseY > y && parent.mouseY < y + labelHeight) {
                 isReady = true;
             }
@@ -62,8 +64,6 @@ class Window {
                     i.x += mousemovement.x;
                     i.y += mousemovement.y;
                 }
-
-                trace(x + '/' + y);
             }
 
             if (Key.isReleased(Key.MOUSE_LEFT) && isReady) {
@@ -80,16 +80,17 @@ class Window {
         lastmouse.y = parent.mouseY;
 
         
-        resizeWindow();
-
+        getWindowHeight();
 
         drawContainer();
 
-
-
+         ///update gui elements
+        for (c in children) { 
+           c.update();
+        }
     }
 
-    function resizeWindow():Void {
+    function getWindowHeight():Void {
         currentHeight = labelHeight;
 
         ///Calcuatle Current Height
@@ -118,7 +119,7 @@ class Window {
         sprite.endFill();
     }
 
-    public inline function getNextYpos():Float {
+    function getNextYpos():Float {
         var startPos = y + labelHeight;
 
         var dy = 0.0;
@@ -132,51 +133,61 @@ class Window {
     }
 
     public function createSeparator():Void {
-        var separator = new Separator(x, getNextYpos(), width, elementHeight);
+        var separator = new Separator(x, getNextYpos(), width, elementHeight, parent);
 
         addElement(separator);
     }
 
-    public function createButton(label:String = '') {
-        var button:Button = new Button(x, getNextYpos(), width, 32, label);
+    public function createButton(label:String = ''):Button {
+        var button:Button = new Button(x, getNextYpos(), width, 32, label, parent);
 
         addElement(button);
+
+        return button;
     }
 
-    public function createSlider(value:Float = 0, label:String = '') {
-        var slider = new Slider(x, getNextYpos(), width, 32, value, label);
+    public function createSlider(value:Float = 0, label:String = ''):Slider {
+        var slider = new Slider(x, getNextYpos(), width, 32, value, label, parent);
 
         addElement(slider);
+
+        return slider;
     }
 
-    public function createLabel(label:String) {
-        var label = new Label(x, getNextYpos(), width, 50, label);
+    public function createLabel(label:String):Label {
+        var label = new Label(x, getNextYpos(), width, 50, label, parent);
 
         addElement(label);
+
+        return label;
     }
 
-    public function createCheckbox(checked:Bool = false, label:String = '') {
-        var check = new Checkbox(x, getNextYpos(), elementHeight, label, checked);
+    public function createCheckbox(checked:Bool = false, label:String = ''):Checkbox {
+        var check = new Checkbox(x, getNextYpos(), elementHeight, label, checked, parent);
 
         addElement(check);
+
+        return check;
     }
 
-    public function createDropdown(values:Array<String>) {
-        var dropdown = new Dropdown(x, getNextYpos(), width, elementHeight, values);
+    public function createDropdown(values:Array<String>):Dropdown {
+        var dropdown = new Dropdown(x, getNextYpos(), width, elementHeight, values, parent);
 
         addElement(dropdown);
+
+        return dropdown;
     }
 
     public function createPanel(data:Array<Data>):Panel {
-        var panel = new Panel(x, getNextYpos(), width, 150, data);
+        var panel = new Panel(x, getNextYpos(), width, 150, data, parent);
 
         addElement(panel);
 
         return panel;
     }
 
-    public function createColorpicker(r:Float = 1, g:Float = 0, b:Float = 0):Colorpicker {
-        var colorpicker = new Colorpicker(x, getNextYpos(), width);
+    public function createColorpicker():Colorpicker {
+        var colorpicker = new Colorpicker(x, getNextYpos(), width, parent);
 
         addElement(colorpicker);
 
@@ -187,15 +198,9 @@ class Window {
         lastElement = e;
         elementHeight = e.height;
 
+        e.parent = parent;
+
 
         children.push(e);
     }
-
-    
-/*
-    public function createOutliner(data:Array<Data>) {
-        var outliner = new Outliner(x, getNextYpos(), width, elementHeight, data);
-
-        addElement(outliner);
-    }*/
 }
