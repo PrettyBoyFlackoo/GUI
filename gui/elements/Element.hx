@@ -24,15 +24,12 @@ class Element {
 
     public var parent:Scene;
 
-    public function new(x:Float, y:Float, width:Float, height:Float) {
+    public function new(x:Float, y:Float, width:Float, height:Float, parent:Scene) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-
-        parent = Main.inst;
-
-        Main.elements.push(this);
+        this.parent = parent;
     }
 
     public function update():Void {
@@ -67,9 +64,6 @@ class Element {
         this.height = height;
     }
 
-    function drag():Void {
-
-    }
 
     public function isMouseOver():Bool {
         if (coords.x > x && coords.x < x + width &&

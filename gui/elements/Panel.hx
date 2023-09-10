@@ -20,8 +20,8 @@ class Panel extends Element {
     var itemMargin:Float = 5;
     var textXOffset:Float = 16;
     
-    public function new(x:Float = 0, y:Float = 0, width:Float = 200, height:Float = 350, data:Array<Data>) {
-        super(x, y, width, height);
+    public function new(x:Float = 0, y:Float = 0, width:Float = 200, height:Float = 350, data:Array<Data>, parent) {
+        super(x, y, width, height, parent);
 
         this.data = data;
 

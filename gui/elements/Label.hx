@@ -16,15 +16,15 @@ class Label extends Element {
 
     public var label:String;
 
-    public function new(x:Float = 0, y:Float = 0, width:Float = 100, height:Float = 50, label:String = '', pos:LabelPos = Left) {
-        super(x, y, width, height);
+    public function new(x:Float = 0, y:Float = 0, width:Float = 100, height:Float = 50, label:String = '', pos:LabelPos = Left, parent) {
+        super(x, y, width, height, parent);
 
         this.label = label;
 
 
         sprite = new Graphics(parent);
 
-        text = Text.createText(x, y, label);
+        text = Text.createText(x, y, label, parent);
     }
 
     override function update() {

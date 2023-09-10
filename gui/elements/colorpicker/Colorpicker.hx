@@ -1,280 +1,254 @@
 package gui.elements.colorpicker;
 
+import h3d.Vector;
 import h2d.Tile;
 import h2d.Bitmap;
-import h2d.col.Point;
-import hxd.Math;
-import hxd.Key;
-import h3d.Vector;
 import h2d.Graphics;
 
 using StringTools;
+using hxd.Math;
 
 class Colorpicker extends Element {
 
     var sprite:Graphics;
-    var picker:Graphics;
-    var pickerPos = new Point();
-    var huePickerPosX:Float;
+    var pickerSprite:Graphics;
+    var text:Text;
 
+    ///Components
+    var gradientPicker:Bitmap;
+    var gradientPickerX:Float;
+    var gradientPickerY:Float;
+    var gradientPickerWidth:Int;
+    var gradientPickerheight:Int;
+    var isGradientPickerActive:Bool;
 
-    var colorpicker:Bitmap;
-    var gradient:GradientShader;
+    var gradientShader:GradientShader;
 
     var huePicker:Bitmap;
-    var hueGradient:HueShader;
+    var huePickerX:Float;
+    var huePickerY:Float;
+    var huePickerWidth:Int;
+    var huePickerHeight:Int = 32;
+    var isHuePickerActive:Bool;
 
-    ///Attributes
-    var padding:Float = 8;
-    var huePickerSize:Float = 32;
-    var previewSize:Float;
+    var hueShader:HueShader;
+
+    var previewX:Float;
+    var previewY:Float;
+    var previewWidth:Int;
+    var previewHeight:Int;
 
 
-    public var color(default, null):Int = 0;
-    var hsv = new Vector(360, 100, 100);
-  
-    var isReady:Bool;
-    var isHueReady:Bool;
-    var isPickerReady:Bool;
+    ///Spacing
+    var separationSize:Float = 2;
+    var margin:Float = 16;
 
-    public function new(x = .0, y = .0, width = 256.) {
+    
+    public var hsv(default, null):Vector = new Vector(360, 100, 100);
+    public var color(default, null):Int;
+    
+    public function new(x:Float = 0, y:Float = 0, width:Float = 200, height:Float = 500, parent) {
+        super(x, y, width, height, parent);
         
-        previewSize = width;
-
-        var height = previewSize * 2 + (padding * 2) + huePickerSize; ///Preview - padding - hue - padding - picker
-
-        super(x, y, width, height);
-
         sprite = new Graphics(parent);
 
-        //Create Colorpicker
-        colorpicker = new Bitmap(Tile.fromColor(0, cast width, cast width), parent);
-        colorpicker.setPosition(x, y + previewSize + huePickerSize);
+        ///Components
+        getTransform();
 
-        gradient = new GradientShader();
+        gradientPicker = new Bitmap(Tile.fromColor(0, gradientPickerWidth, gradientPickerheight), parent);
+        gradientPicker.addShader(gradientShader = new GradientShader());
 
-        colorpicker.addShader(gradient);
+        huePicker = new Bitmap(Tile.fromColor(0xFF0000, huePickerWidth, huePickerHeight), parent);
+        huePicker.addShader(new HueShader());
 
-
-        ///Create Hue Picker
-        huePicker = new Bitmap(Tile.fromColor(0, cast width - padding * 2, cast huePickerSize), parent);
-        huePicker.setPosition(x + padding, y + previewSize + padding);
-
-        hueGradient = new HueShader();
-
-        huePicker.addShader(hueGradient);
-
-        
-        ///Picker
-        picker = new Graphics(parent);
+        applyTransform();
 
 
-        pickerPos.x = x + width;
-        pickerPos.y = y + previewSize + huePickerSize + width;
+        ///Create Picker
+        pickerSprite = new Graphics(parent);
 
-        huePickerPosX = x;
-    }
-
-    inline function getMousePos(start:Point, end:Point, ?absolute:Bool):Point {
-        var mouse = new Point(parent.mouseX, parent.mouseY);
-
-        var dx = mouse.x - start.x;
-        var dy = mouse.y - start.y;
-
-        dx = Math.clamp(dx, 0, end.x);
-        dy = Math.clamp(dy, 0, end.y);
-
-        if (absolute) {
-            dx /= end.x;
-            dy /= end.y;
-        }
-
-        return new Point(dx, dy);
-    }
-
-    function getHue():Float {
-        var abs = getMousePos(new Point(x + padding, y + previewSize), new Point(width - padding, huePickerSize), true);
-
-        var h = abs.x * 360;
-
-        var t = abs.x * (width - padding * 2);
-
-        huePickerPosX = t;
-
-        return h;
-    }
-
-    function getSaturation():Float {
-        var abs = getMousePos(new Point(x, y + previewSize + huePickerSize), new Point(width, width), true);
-
-
-        pickerPos.x = abs.x * width;
-
-        return abs.x * 100;
-    }
-
-    function getValue():Float {
-        var abs = getMousePos(new Point(x, y + previewSize + huePickerSize), new Point(width, width), true);
-
-        pickerPos.y = abs.y * width;
-
-        return abs.y * 100;
+        ///Text
+        text = Text.createText(x, y, '', parent);
     }
 
     override function update() {
         super.update();
 
-        ///Get Values from User Input
-        checkInput();
-        
-        var getRgb = hsvToRgb(hsv.x, hsv.y, hsv.z);
-        color = rgbToHex(getRgb.r, getRgb.g, getRgb.b);
+        ///X y
+        applyTransform();
 
-        draw();
-    }
+        ///Controls
 
-    function checkInput():Void {
-        if (Key.isPressed(Key.MOUSE_LEFT) && !isHueReady) {
-
-            ///Check Hue
-            if (checkMouseOver(new Point(x, y + previewSize + padding), new Point(x + width, y + previewSize + padding + huePickerSize))) {
-                isHueReady = true;
-            }
-            
-        }
-        if (Key.isPressed(Key.MOUSE_LEFT) && !isPickerReady) {
-
-            ///Check Hue
-            if (checkMouseOver(new Point(x, y + previewSize + padding * 2 + huePickerSize), new Point(x + width, y + previewSize + padding * 2 + huePickerSize + width))) {
-                isPickerReady = true;
+        //Hue
+        if (isClicking(0, false) && !isHuePickerActive) {
+            if (checkHover(huePickerX, huePickerY, huePickerWidth, huePickerHeight)) {
+                isHuePickerActive = true;
             }
         }
 
-        ///Hue
-        if (Key.isDown(Key.MOUSE_LEFT) && isHueReady) {
+        if (isClicking(1, false) && isHuePickerActive) {
             hsv.x = getHue();
         }
 
-        ///Sat & Val
-        if (Key.isDown(Key.MOUSE_LEFT) && isPickerReady) {
+        if (isClicking(2, false) && isHuePickerActive) {
+            isHuePickerActive = false;
+        }
+
+        ///Gradient
+        if (isClicking(0, false) && !isGradientPickerActive) {
+            if (checkHover(gradientPickerX, gradientPickerY, gradientPickerWidth, gradientPickerheight)) {
+                isGradientPickerActive = true;
+            }
+        }
+
+        if (isClicking(1, false) && isGradientPickerActive) {
             hsv.y = getSaturation();
             hsv.z = getValue();
-
-            ///Move Picker
-            pickerPos.x = coords.x;
-            pickerPos.y = coords.y;
-
-            
-            ///Keep Horizontal
-            if (pickerPos.x < x) {
-                pickerPos.x = x;
-            }
-            else if (pickerPos.x > x + width) {
-                pickerPos.x = x + width;
-            }
-
-            ///Keep Vertical
-            if (pickerPos.y < y + previewSize + huePickerSize + padding * 2) {
-                pickerPos.y = y + previewSize + huePickerSize + padding * 2;
-            }
-            else if (pickerPos.y > y + previewSize + huePickerSize + padding * 2 + width) {
-                pickerPos.y = y + previewSize + huePickerSize + padding * 2 + width;
-            }
         }
 
-        if (Key.isReleased(Key.MOUSE_LEFT) && isHueReady) {
-            isHueReady = false;
+        if (isClicking(2, false) && isGradientPickerActive) {
+            isGradientPickerActive = false;
         }
 
-        if (Key.isReleased(Key.MOUSE_LEFT) && isPickerReady) {
-            isPickerReady = false;
-        }
+
+        ///Apply Shader
+        gradientShader.hue = hsv.x / 360;
+
+
+        ///Get Final Color
+        var rgb = hsvToRgb(hsv.x, hsv.y, hsv.z);
+        color = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+        drawColorpicker();
+
+        ///Draw Text
+        var margin = 16;
+        var ypos = huePickerY + huePickerHeight + margin;
+        var xpos = x + width / 2;
+
+        text.text = '0x' + color.hex();
+        text.x = xpos;
+        text.y = ypos;
     }
 
-    function checkMouseOver(start:Point, end:Point):Bool {
-        if (coords.x > start.x && coords.x < end.x && coords.y > start.y && coords.y < end.y) {
+    function drawColorpicker():Void {
+        sprite.clear();
+
+        sprite.beginFill(0x141414);
+        sprite.drawRect(x, y, width, height);
+        sprite.endFill();
+
+        var blockHeight = separationSize;
+        sprite.beginFill(0x26B3EB);
+        sprite.drawRect(gradientPickerX, gradientPickerY + gradientPickerheight, gradientPickerWidth, blockHeight);
+        sprite.endFill();
+
+        ///Draw Preview
+        sprite.beginFill(color);
+        sprite.drawRect(previewX, previewY, previewWidth, previewHeight);
+        sprite.endFill();
+
+
+        ///Draw Pickers
+        pickerSprite.clear();
+
+        ///Hue
+        var width = 6;
+        var huePickerXPos = hsv.x / 360 * (huePickerWidth - width);
+        pickerSprite.lineStyle(1, 0xFFFFFF);
+        pickerSprite.beginFill(0xD6D5D5, .5);
+        pickerSprite.drawRect(huePickerX + huePickerXPos, huePickerY, width, huePickerHeight);
+
+        ///Gradient
+        var size = 12;
+        var gradientPickerXPos = hsv.y / 100 * gradientPickerWidth;
+        var gradientPickerYPos = hsv.z / 100 * gradientPickerheight;
+        pickerSprite.drawCircle(gradientPickerX + gradientPickerXPos, gradientPickerY + gradientPickerYPos, size, size * 2);
+        
+        var innerSize = 4;
+        pickerSprite.lineStyle();
+        pickerSprite.beginFill(0x797979, 1);
+        pickerSprite.drawCircle(gradientPickerX + gradientPickerXPos, gradientPickerY + gradientPickerYPos, innerSize, innerSize * 2);
+        pickerSprite.endFill();
+    }
+
+    function getTransform() {
+        gradientPickerX = x;
+        gradientPickerY = y;
+        gradientPickerWidth = Math.round(width);
+        gradientPickerheight = gradientPickerWidth;
+
+        huePickerX = gradientPickerX;
+        huePickerY = gradientPickerY + gradientPickerheight + separationSize;
+        huePickerWidth = gradientPickerWidth;
+
+        previewWidth = Math.round(width);
+        previewHeight = previewWidth;
+    }
+
+    function applyTransform() {
+        getTransform();
+
+        ///apply to bmps
+        gradientPicker.x = gradientPickerX;
+        gradientPicker.y = gradientPickerY;
+
+        huePicker.x = huePickerX;
+        huePicker.y = huePickerY;
+
+        var textSpace = 64;
+        previewX = x;
+        previewY = y + gradientPickerheight + huePickerHeight + textSpace;
+
+        var totalHeight = gradientPickerheight + huePickerHeight + textSpace + previewHeight;
+        height = totalHeight;
+    }
+
+    function getHue() {
+        var abs = (coords.x - huePickerX) / huePickerWidth;
+
+        if (abs < 0) {
+            abs = 0;
+        }
+        else if (abs > 1) {
+            abs = 1;
+        }
+
+        return abs * 360;
+    }
+
+    function getSaturation() {
+        var abs = (coords.x - gradientPickerX) / gradientPickerWidth;
+
+        if (abs < 0) {
+            abs = 0;
+        }
+        else if (abs > 1) {
+            abs = 1;
+        }
+
+        return abs * 100;
+    }
+
+    function getValue() {
+        var abs = (coords.y - gradientPickerY) / gradientPickerheight;
+
+        if (abs < 0) {
+            abs = 0;
+        }
+        else if (abs > 1) {
+            abs = 1;
+        }
+
+        return abs * 100;
+    }
+
+    inline function checkHover(startX:Float, startY:Float, width:Float, height:Float):Bool {
+        if (coords.x > startX && coords.x < startX + width && coords.y > startY && coords.y < startY + height) {
             return true;
         }
 
         return false;
-    }
-
-    function draw() {
-        sprite.clear();
-
-        sprite.beginFill(0x272727);
-        sprite.drawRect(x, y, width, height);
-        sprite.endFill();
-
-        ///Set Shader pos
-        huePicker.setPosition(x + padding, y + previewSize + padding);
-        colorpicker.setPosition(x, y + previewSize + huePickerSize + padding * 2);
-
-        ///Draw Preview
-        sprite.beginFill(color);
-        sprite.drawRect(x, y, previewSize, previewSize);
-        sprite.endFill();
-
-        gradient.hue = hsv.x / 360;
-
-        ///Draw Picker
-        picker.clear();
-        picker.lineStyle(2, 0xCECECE);
-        picker.beginFill(0xFFFFFF, .5);
-        picker.drawCircle(pickerPos.x, pickerPos.y, 12, 18);
-        picker.endFill();
-
-
-        picker.lineStyle();
-        picker.beginFill(0x242424, .7);
-        picker.drawCircle(pickerPos.x, pickerPos.y, 4, 12);
-        picker.endFill();
-
-        ///Draw Hue Picker
-        var width = 8;
-        picker.lineStyle(1, 0xFFFFFF);
-        picker.beginFill(0xFFFFFF, .7);
-        picker.drawRect(x + huePickerPosX + width / 2, y + previewSize + padding, width, huePickerSize);
-        picker.endFill();
-    }
-
-    function vecToRgb(x:Int, y:Int, z:Int):RGB {
-        var r = Math.round(x * 255);
-        var g = Math.round(y * 255);
-        var b = Math.round(z * 255);
-
-        var rgb:RGB = {
-            r: r,
-            g: g,
-            b: b
-        };
-
-        return rgb;
-    }
-
-    function rgbToVec(r:Int, g:Int, b:Int):Vector {
-        var r = r / 255;
-        var g = g / 255;
-        var b = b / 255;
-
-        return new Vector(r, g, b);
-    }
-
-    function rgbToHex(r:Int, g:Int, b:Int):Int {
-        var r = (r & 0xFF) << 16;
-        var g = (g & 0xFF) << 8;
-        var b = (b & 0xFF);
-
-        return Std.parseInt('0x' + (r + g + b).hex());
-    }
-
-    function toHex(r:Int, g:Int, b:Int) {
-        
-        var r = (r & 0xFF) << 16;
-        var g = (g & 0xFF) << 8;
-        var b = (b & 0xFF);
-
-        return Std.parseInt('0x' + (r + g + b).hex());
     }
 
     function hsvToRgb(hue:Float, saturation:Float, brightness:Float):RGB {
@@ -309,6 +283,14 @@ class Colorpicker extends Element {
 
 		return c;
 	}
+
+    function rgbToHex(r:Int, g:Int, b:Int):Int {
+        var r = (r & 0xFF) << 16;
+        var g = (g & 0xFF) << 8;
+        var b = (b & 0xFF);
+
+        return Std.parseInt('0x' + (r + g + b).hex());
+    }
 }
 
 typedef RGB = {

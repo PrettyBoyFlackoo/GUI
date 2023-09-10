@@ -7,21 +7,20 @@ class Button extends Element {
 
     var sprite:Graphics;
     var txt:Text;
+    var bgColor:Int;
 
     public var value:String;
 
     public var clicked(default, null):Bool;
 
-    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, value:String) {
-        super(x, y, width, height);
+    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, value:String, parent) {
+        super(x, y, width, height, parent);
         
         this.value = value;
 
         sprite = new Graphics(parent);
 
-        txt = Text.createText(0, 0, this.value);
-
-        Main.elements.push(this);
+        txt = Text.createText(0, 0, this.value, parent);
     }
 
     override function update() {
@@ -30,13 +29,18 @@ class Button extends Element {
         drawButton();
 
         clicked = isClicking();
+
+        bgColor = 0x141414;
+        if (isClicking(1)) {
+            bgColor = 0x101010;
+        }
     }
 
     function drawButton():Void {
         sprite.clear();
 
         //sprite.lineStyle(2, 0x29A1B9);
-        sprite.beginFill(0x141414);
+        sprite.beginFill(bgColor);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 

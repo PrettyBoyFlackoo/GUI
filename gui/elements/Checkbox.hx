@@ -17,11 +17,11 @@ class Checkbox extends Element {
     var alpha:Float;
     var rounded:Bool = false;
 
-    public function new(x:Float = 0, y:Float = 0, height:Float = 32, label:String = '', isChecked:Bool = false) {
+    public function new(x:Float = 0, y:Float = 0, height:Float = 32, label:String = '', isChecked:Bool = false, parent) {
 
         size = width = height;
 
-        super(x, y, size, size);
+        super(x, y, size, size, parent);
 
         isBlock = false;
 
@@ -30,7 +30,7 @@ class Checkbox extends Element {
         
         sprite = new Graphics(parent);
 
-        txt = Text.createText(x, y, label);
+        txt = Text.createText(x, y, label, parent);
     }
 
     override function update() {
@@ -48,10 +48,13 @@ class Checkbox extends Element {
     function drawCheckbox():Void {
         sprite.clear();
 
-        var padding = 0.0; ///additional space inside
+        var padding = 0; ///additional space inside
 
         var room = thickness / 2 + padding;
         var margin = size - thickness * 2 - (room * 2);
+
+        ///get height
+        calculateHeight(thickness);
 
         ///Draw Outer
         sprite.lineStyle(thickness, 0x282828);
@@ -86,6 +89,10 @@ class Checkbox extends Element {
         var xPos = x + size + thickness * 2 + offsetX + txt.textWidth / 2;
         var yPos = y + size / 2 - txt.textHeight / 2;
         txt.setPosition(xPos, yPos);
+    }
+
+    function calculateHeight(border:Float) {
+        height = border + size;
     }
 
     inline function checkRadius():Bool {

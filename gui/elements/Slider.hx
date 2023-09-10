@@ -19,15 +19,15 @@ class Slider extends Element {
     var label:String;
     public var value(default, null):Float;
     
-    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, value:Float = 0, label:String = '', max:Float = 100) {
-        super(x, y, width, height);
+    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, value:Float = 0, label:String = '', max:Float = 100, parent) {
+        super(x, y, width, height, parent);
 
         this.label = label;
         this.max = max;
 
         sprite = new Graphics(parent);
         
-        txt = Text.createText(x, y, '-:--');
+        txt = Text.createText(x, y, '-:--', parent);
 
         setValue(value);
     }

@@ -19,8 +19,8 @@ class Dropdown extends Element {
 
     public var value(default, null):String = '-:--';
 
-    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, values:Array<String>) {
-        super(x, y, width, height);
+    public function new(x:Float = 0, y:Float = 0, width:Float = 120, height:Float = 50, values:Array<String>, parent) {
+        super(x, y, width, height, parent);
 
         this.values = values;
 
@@ -30,10 +30,10 @@ class Dropdown extends Element {
             value = values[0];
         }
 
-        label = Text.createText(x, y, value);
+        label = Text.createText(x, y, value, parent);
 
         for (i in values) {
-            var txt = Text.createText(x, y, i);
+            var txt = Text.createText(x, y, i, parent);
 
             texts.push(txt);
         }

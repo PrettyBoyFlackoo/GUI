@@ -23,8 +23,8 @@ class Checker extends Element {
 
     public var color(default, null):Int;
 
-    public function new(x = 0, y = 0.0, width = 100.0, height = 100.0, data:Array<Data>) {
-        super(x, y, width, height);
+    public function new(x = 0, y = 0.0, width = 100.0, height = 100.0, data:Array<Data>, parent) {
+        super(x, y, width, height, parent);
 
         this.data = data;
 
