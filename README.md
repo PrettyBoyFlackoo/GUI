@@ -16,4 +16,12 @@ To see stuff on Your screen just create a new window instance and create differe
 
 ![1](https://github.com/PrettyBoyFlackoo/GUI/assets/95177386/dbd8f98a-9869-4d7f-83d9-f7e4a10a184e)
 
+### Additional
+To actually make it work you need to create a static array called 'windows', loop through and update it, done!
+
+![0](https://github.com/PrettyBoyFlackoo/GUI/assets/95177386/a8f382c0-c7f3-4a64-a282-8ba59f6ef665)
+
+![1](https://github.com/PrettyBoyFlackoo/GUI/assets/95177386/1411d01c-8428-4b7d-b30f-9bc144fc8fbb)
+
+
 YouTube videos --> https://www.youtube.com/playlist?list=PLikn7nWnHi6vhqw3BhaNfDqGiAtTapz6E
