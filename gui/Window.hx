@@ -35,6 +35,9 @@ class Window {
 
     var currentHeight:Float;
 
+
+ 
+
     public function new(x:Float = 0, y:Float = 0, width:Float = 100, label:String = '', parent:Scene) {
         this.x = x;
         this.y = y;
@@ -84,9 +87,12 @@ class Window {
 
         drawContainer();
 
-         ///update gui elements
+
+        
+        ///update gui elements
         for (c in children) { 
            c.update();
+
         }
     }
 
@@ -139,7 +145,7 @@ class Window {
     }
 
     public function createButton(label:String = ''):Button {
-        var button:Button = new Button(x, getNextYpos(), width, 32, label, parent);
+        var button:Button = new Button(x, getNextYpos(), width, 40, label, parent);
 
         addElement(button);
 
@@ -163,7 +169,7 @@ class Window {
     }
 
     public function createCheckbox(checked:Bool = false, label:String = ''):Checkbox {
-        var check = new Checkbox(x, getNextYpos(), elementHeight, label, checked, parent);
+        var check = new Checkbox(x, getNextYpos(), 32, label, checked, parent);
 
         addElement(check);
 
@@ -192,6 +198,14 @@ class Window {
         addElement(colorpicker);
 
         return colorpicker;
+    }
+
+    public function createChecker(data:Array<Data>):Checker {
+        var checker = new Checker(x, getNextYpos(), width, 100, data, parent);
+
+        addElement(checker);
+
+        return checker;
     }
 
     function addElement(e:Element) {
