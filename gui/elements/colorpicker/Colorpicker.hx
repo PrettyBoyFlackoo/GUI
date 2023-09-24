@@ -1,5 +1,6 @@
 package gui.elements.colorpicker;
 
+import gui.elements.data.ColorPalette;
 import h3d.Vector;
 import h2d.Tile;
 import h2d.Bitmap;
@@ -134,7 +135,7 @@ class Colorpicker extends Element {
     function drawColorpicker():Void {
         sprite.clear();
 
-        sprite.beginFill(0x141414);
+        sprite.beginFill(ColorPalette.surfaceColor);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
@@ -156,7 +157,7 @@ class Colorpicker extends Element {
         var width = 6;
         var huePickerXPos = hsv.x / 360 * (huePickerWidth - width);
         pickerSprite.lineStyle(1, 0xFFFFFF);
-        pickerSprite.beginFill(0xD6D5D5, .5);
+        pickerSprite.beginFill(ColorPalette.colorpickerHueThumbColor, .5);
         pickerSprite.drawRect(huePickerX + huePickerXPos, huePickerY, width, huePickerHeight);
 
         ///Gradient
@@ -167,7 +168,7 @@ class Colorpicker extends Element {
         
         var innerSize = 4;
         pickerSprite.lineStyle();
-        pickerSprite.beginFill(0x797979, 1);
+        pickerSprite.beginFill(ColorPalette.colorpickerGradientThumbInnerColor, 1);
         pickerSprite.drawCircle(gradientPickerX + gradientPickerXPos, gradientPickerY + gradientPickerYPos, innerSize, innerSize * 2);
         pickerSprite.endFill();
     }

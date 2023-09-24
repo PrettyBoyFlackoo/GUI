@@ -1,6 +1,7 @@
 package gui.elements;
 
 
+import gui.elements.data.ColorPalette;
 import h2d.col.Point;
 import h2d.Graphics;
 
@@ -38,7 +39,7 @@ class Label extends Element {
         sprite.clear();
 
         ///Transparent
-        sprite.beginFill(0x141414, 0);
+        sprite.beginFill(ColorPalette.surfaceColor, 0);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
@@ -56,15 +57,5 @@ class Label extends Element {
 
         text.text = label;
         text.setPosition(x + width / 2, y + height / 2 - text.textHeight / 2);
-    }
-
-    function getPos():Point {
-        var pos = new Point();
-
-       
-
-        //text.setPosition(x + width / 2, y + height / 2 - text.textHeight / 2);
-        
-        return pos;
     }
 }

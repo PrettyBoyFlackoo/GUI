@@ -1,6 +1,7 @@
 package gui.elements;
 
 
+import gui.elements.data.ColorPalette;
 import h2d.Object;
 import hxd.Key;
 import h2d.col.Point;
@@ -26,6 +27,7 @@ class Scroll {
 
     var mask:Mask;
 
+    var scrollColor:Int;
     var scrollbarY:Float = 0;
     var scrollbarSize:Float;
     var isReady:Bool;
@@ -86,6 +88,7 @@ class Scroll {
             return;
         }
 
+
         ///Mouse Scroll
         if (!isReady) {
             var factor = 15.0;
@@ -96,7 +99,7 @@ class Scroll {
 
             if (Key.isPressed(Key.MOUSE_WHEEL_UP) && parent.mouseX > x && parent.mouseX < x + width && parent.mouseY > y && parent.mouseY < y + height) {
                 ///Up
-    
+                
                 scrollbarY -= abs;
     
                 scrollbarY = Math.clamp(scrollbarY, 0, height - scrollbarSize);
@@ -124,12 +127,12 @@ class Scroll {
         var yPos = y;
 
         ///bg
-        sprite.beginFill(0x343434, .6);
+        sprite.beginFill(ColorPalette.scrollTrackColor, .6);
         sprite.drawRect(xPos, yPos, scrollWidth, height);
         sprite.endFill();
 
         //thumb
-        sprite.beginFill(0x444444);
+        sprite.beginFill(scrollColor);
         sprite.drawRect(xPos, yPos + scrollbarY, scrollWidth, scrollbarSize);
         sprite.endFill();
 
@@ -139,6 +142,7 @@ class Scroll {
         mouseMovement.x = coords.x - lastmouse.x;
         mouseMovement.y = coords.y - lastmouse.y;
 
+        scrollColor = ColorPalette.scrollThumbColor;
 
         ///Check clicking
         if (Key.isPressed(Key.MOUSE_LEFT) && coords.x > xPos && coords.x < xPos + scrollWidth && coords.y > y + scrollbarY && coords.y < y + scrollbarY + scrollbarSize&& !isReady) {
@@ -147,6 +151,8 @@ class Scroll {
 
         if (Key.isDown(Key.MOUSE_LEFT) && isReady) {
             scrollbarY += mouseMovement.y;
+
+            getScrollColor();
 
           
             scrollbarY = Math.clamp(scrollbarY, 0, height - scrollbarSize);
@@ -157,6 +163,12 @@ class Scroll {
         }
 
         lastmouse.set(coords.x, coords.y);
+    }
+
+    function getScrollColor() {
+        scrollColor = ColorPalette.scrollActiveThumbColor;
+
+        trace('s');
     }
 
     function getSizeDiff():Float {

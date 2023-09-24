@@ -23,7 +23,7 @@ class Checker extends Element {
 
     public var color(default, null):Int;
 
-    public function new(x = 0, y = 0.0, width = 100.0, height = 100.0, data:Array<Data>, parent) {
+    public function new(x = 0., y = 0.0, width = 100.0, height = 100.0, data:Array<Data>, parent) {
         super(x, y, width, height, parent);
 
         this.data = data;
@@ -63,15 +63,15 @@ class Checker extends Element {
 
         sprite.clear();
 
-        sprite.beginFill(0x141414);
+        sprite.beginFill(ColorPalette.checkerBackground);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
 
         ///Draw Checker
         for (i in blocks) {
-            sprite.beginFill(i.color);
-            sprite.lineStyle(1, 0xD1D1D1);
+            sprite.beginFill(ColorPalette.checkerItemBackground);
+            sprite.lineStyle(1, ColorPalette.checkerItemBorderColor);
             sprite.drawRect(i.x, i.y, checkerSize, checkerSize);
 
         }

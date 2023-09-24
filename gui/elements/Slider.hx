@@ -1,5 +1,6 @@
 package gui.elements;
 
+import gui.elements.data.ColorPalette;
 import h2d.col.Point;
 import h2d.Graphics;
 
@@ -84,17 +85,18 @@ class Slider extends Element {
         sprite.clear();
 
         ///Draw background
-        sprite.beginFill(0x141414, .75);
+        sprite.beginFill(ColorPalette.sliderBackgroundColor, .65);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
         ///Draw Inner
-        sprite.beginFill(0x282828);
+        sprite.beginFill(ColorPalette.sliderColor);
         sprite.drawRect(x, y, fill, height);
         sprite.endFill();
 
         ///Draw Value
         txt.text = '$label$value';
+        txt.textColor = ColorPalette.textColor;
 
         var offset = new Point(width / 2, height / 2 - txt.textHeight / 2);
         txt.setPosition(x + offset.x, y + offset.y);

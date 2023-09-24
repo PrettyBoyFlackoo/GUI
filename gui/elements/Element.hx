@@ -1,6 +1,6 @@
 package gui.elements;
 
-
+import gui.elements.data.ColorPalette;
 import h2d.Graphics;
 import hxd.Key;
 import h2d.Scene;
@@ -13,14 +13,15 @@ class Element {
     public var width:Float;
     public var height:Float;
 
+    ///Color
+    var _c:Int;
+
     var hasClicked:Bool;
     public var isLocked:Bool = true;
 
     public var coords = new Point();
     public var mouseMovement = new Point();
     var lastMouse = new Point();
-
-    public var isBlock:Bool = true;
 
     public var parent:Scene;
 
@@ -34,11 +35,12 @@ class Element {
 
     public function update():Void {
         updateMouse();
-
         if (!isLocked) {
             x += mouseMovement.x;
             y += mouseMovement.y;
         }
+
+        
     }
 
     function updateMouse():Void {

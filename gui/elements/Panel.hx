@@ -101,7 +101,7 @@ class Panel extends Element {
     function drawPanel() {
         sprite.clear();
 
-        sprite.beginFill(0x141414);
+        sprite.beginFill(ColorPalette.panelBackgroundColor);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
@@ -111,7 +111,7 @@ class Panel extends Element {
 
             var col = 0;
 
-            i == activeItem ? col = 0x444444 : col = 0x303030;
+            i == activeItem ? col = ColorPalette.panelActiveItemColor : col = ColorPalette.panelItemColor;
 
             sprite.beginFill(col);
             sprite.drawRect(e.x, e.y, e.width, e.height);

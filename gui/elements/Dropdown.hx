@@ -64,13 +64,13 @@ class Dropdown extends Element {
         sprite.clear();
 
         ///Draw Bounds
-        sprite.beginFill(0x242424, .4);
+        sprite.beginFill(ColorPalette.dropdownBoundsColor, .4);
         sprite.drawRect(x, y, width, height);
         sprite.endFill();
 
         var border = 2;
         var borderSide = border / 2;
-        sprite.lineStyle(border, 0x2B2B2B);
+        sprite.lineStyle(border, ColorPalette.dropdownBoundsColor);
         sprite.drawRect(x + borderSide, y + borderSide, width - border, height - border);
 
         label.text = value;
@@ -87,7 +87,7 @@ class Dropdown extends Element {
 
         ///Draw List
         sprite.lineStyle();
-        sprite.beginFill(0x282828);
+        sprite.beginFill(ColorPalette.dropdownListBackgroundColor);
 
         var xPos = x;
         var yPos = y + height;
@@ -101,7 +101,7 @@ class Dropdown extends Element {
         sprite.endFill();
 
         ///Draw List Elements
-        sprite.beginFill(0x424242);
+        sprite.beginFill(ColorPalette.dropdownItemBackgroundColor);
 
 
         for (i in 0...values.length) {
@@ -114,6 +114,7 @@ class Dropdown extends Element {
             var val = values[i];
             var txt = texts[i];
             txt.text = val;
+            txt.textColor = ColorPalette.dropdownListTextColor;
             txt.setPosition(xOffset + width / 2, yOffset + elementHeight / 2 - txt.textHeight / 2);
 
             var item:Item = {

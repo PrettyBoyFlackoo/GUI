@@ -1,5 +1,6 @@
 package gui.elements;
 
+import gui.elements.data.ColorPalette;
 import h2d.col.Point;
 import h2d.Graphics;
 
@@ -30,10 +31,14 @@ class Button extends Element {
 
         clicked = isClicking();
 
-        bgColor = 0x141414;
+        bgColor = ColorPalette.surfaceColor;
+        txt.textColor = ColorPalette.textColor;
+
         if (isClicking(1)) {
-            bgColor = 0x101010;
+            bgColor = ColorPalette.activeSurfaceColor;
+            txt.textColor = ColorPalette.activeTextColor;
         }
+
     }
 
     function drawButton():Void {
